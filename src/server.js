@@ -1,71 +1,36 @@
-// env
-import 'dotenv/config';
-
-// cors
-import cors from 'cors';
-
-// express
 import express from 'express';
+import 'dotenv/config';
+import cors from 'cors';
+import { connectMongoDB } from './db/connectMongoDB.js';
+import { logger } from './middleware/logger.js';
+// 404
+import { notFoundHandler } from './middleware/notFoundHandler.js';
+// 500
+import { errorHandler } from './middleware/errorHandler.js';
+// routes
+import notesRouter from './routes/notesRoutes.js';
 
-// pino
-import pino from 'pino-http';
-
-// express & port
+// старт
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// our PORT
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Mongo
+await connectMongoDB();
 
-// pino
+// Middleware
+app.use(logger);
 app.use(express.json());
 app.use(cors());
-app.use(
-  pino({
-    level: 'info',
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'HH:MM:ss',
-        ignore: 'pid,hostname',
-        messageFormat:
-          '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
-        hideObject: true,
-      },
-    },
-  }),
-);
 
-// notes
-app.get('/notes', (req, res) => {
-  res.status(200).json({ message: 'Retrieved all notes' });
-});
-
-// dynamic notes
-app.get('/notes/:noteId', (req, res) => {
-  const { noteId } = req.params;
-  res.status(200).json({ message: `Retrieved note with ID: ${noteId}` });
-});
-
-// test error
-app.get('/test-error', () => {
-  throw new Error('Simulated server error');
-});
+// Роутc
+app.use(notesRouter);
 
 // middleware 404
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
+app.use(notFoundHandler);
 // error 500
-app.use((err, req, res, next) => {
-  console.log(err.message);
+app.use(errorHandler);
 
-  res.status(500).json({
-    message: 'Server error',
-    error: err.message,
-  });
+// взлітаємо
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
