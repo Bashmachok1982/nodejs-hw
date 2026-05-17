@@ -1,36 +1,42 @@
 import express from 'express';
 import 'dotenv/config';
+import helmet from 'helmet';
 import cors from 'cors';
+// celebrate(validator)
+import { errors } from 'celebrate';
 import { connectMongoDB } from './db/connectMongoDB.js';
 import { logger } from './middleware/logger.js';
-// 404
+// Errors
 import { notFoundHandler } from './middleware/notFoundHandler.js';
-// 500
 import { errorHandler } from './middleware/errorHandler.js';
 // routes
 import notesRouter from './routes/notesRoutes.js';
 
-// старт
+//! старт
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Mongo
+//! Mongo
 await connectMongoDB();
 
-// Middleware
+//! Middleware
+app.use(helmet());
 app.use(logger);
 app.use(express.json());
 app.use(cors());
 
-// Роутc
+//! Роутc
 app.use(notesRouter);
 
+//! Errors
 // middleware 404
 app.use(notFoundHandler);
+// celebrate(validator)
+app.use(errors());
 // error 500
 app.use(errorHandler);
 
-// взлітаємо
+//! взлітаємо
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

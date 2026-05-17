@@ -1,25 +1,37 @@
 import { Router } from 'express';
-import { getAllNotes } from '../controllers/notesController.js';
-import { getNoteById } from '../controllers/notesController.js';
-import { createNote } from '../controllers/notesController.js';
-import { deleteNote } from '../controllers/notesController.js';
-import { updateNote } from '../controllers/notesController.js';
+
+import {
+  getAllNotes,
+  getNoteById,
+  createNote,
+  deleteNote,
+  updateNote,
+} from '../controllers/notesController.js';
+
+// celebrate / joi / validator celebrate(function) + validator ID(noteID)
+import { celebrate } from 'celebrate';
+import {
+  createNoteSchema,
+  noteIdSchema,
+  updateNoteSchema,
+  getAllNotesSchema,
+} from '../validations/notesValidation.js';
 
 const router = Router();
 
-// all
-router.get('/notes', getAllNotes);
+//! GET (all)
+router.get('/notes', celebrate(getAllNotesSchema), getAllNotes);
 
-// notes/:noteId
-router.get('/notes/:noteId', getNoteById);
+//! GET notes/:noteId
+router.get('/notes/:noteId', celebrate(noteIdSchema), getNoteById);
 
-// post
-router.post('/notes', createNote);
+//! POST
+router.post('/notes', celebrate(createNoteSchema), createNote);
 
-// delete
-router.delete('/notes/:noteId', deleteNote);
+//! DELETE
+router.delete('/notes/:noteId', celebrate(noteIdSchema), deleteNote);
 
-// patch
-router.patch('/notes/:noteId', updateNote);
+//! PATCH
+router.patch('/notes/:noteId', celebrate(updateNoteSchema), updateNote);
 
 export default router;
