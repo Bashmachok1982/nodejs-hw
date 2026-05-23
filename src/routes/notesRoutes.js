@@ -16,8 +16,13 @@ import {
   updateNoteSchema,
   getAllNotesSchema,
 } from '../validations/notesValidation.js';
+import { authenticate } from '../middleware/authenticate.js';
 
 const router = Router();
+
+//! застосовуємо до всіх роутів нотаток,
+//! щоб забезпечити доступ лише для авторизованих користувачів.
+router.use('/notes', authenticate);
 
 //! GET (all)
 router.get('/notes', celebrate(getAllNotesSchema), getAllNotes);

@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 import helmet from 'helmet';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 // celebrate(validator)
 import { errors } from 'celebrate';
 import { connectMongoDB } from './db/connectMongoDB.js';
@@ -11,6 +12,7 @@ import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 // routes
 import notesRouter from './routes/notesRoutes.js';
+import authRouter from './routes/authRoutes.js';
 
 //! старт
 const app = express();
@@ -24,9 +26,11 @@ app.use(helmet());
 app.use(logger);
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 //! Роутc
 app.use(notesRouter);
+app.use(authRouter);
 
 //! Errors
 // middleware 404

@@ -20,6 +20,11 @@ const noteSchema = new Schema(
       enum: TAGS,
       required: false,
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -27,6 +32,9 @@ const noteSchema = new Schema(
   },
 );
 
-noteSchema.index({ tag: 1 });
+//! текстові індекси не обʼєднувати в один рядок (!окремо!)
+noteSchema.index({ title: 'text', content: 'text' });
+//!додаємо userId
+noteSchema.index({ userId: 1, tag: 1 });
 
 export const Note = model('Note', noteSchema);
