@@ -1,25 +1,42 @@
 import { Router } from 'express';
-import { getAllNotes } from '../controllers/notesController.js';
-import { getNoteById } from '../controllers/notesController.js';
-import { createNote } from '../controllers/notesController.js';
-import { deleteNote } from '../controllers/notesController.js';
-import { updateNote } from '../controllers/notesController.js';
+
+import {
+  getAllNotes,
+  getNoteById,
+  createNote,
+  deleteNote,
+  updateNote,
+} from '../controllers/notesController.js';
+
+// celebrate / joi / validator celebrate(function) + validator ID(noteID)
+import { celebrate } from 'celebrate';
+import {
+  createNoteSchema,
+  noteIdSchema,
+  updateNoteSchema,
+  getAllNotesSchema,
+} from '../validations/notesValidation.js';
+import { authenticate } from '../middleware/authenticate.js';
 
 const router = Router();
 
-// all
-router.get('/notes', getAllNotes);
+//! застосовуємо до всіх роутів нотаток,
+//! щоб забезпечити доступ лише для авторизованих користувачів.
+router.use('/notes', authenticate);
 
-// notes/:noteId
-router.get('/notes/:noteId', getNoteById);
+//! GET (all)
+router.get('/notes', celebrate(getAllNotesSchema), getAllNotes);
 
-// post
-router.post('/notes', createNote);
+//! GET notes/:noteId
+router.get('/notes/:noteId', celebrate(noteIdSchema), getNoteById);
 
-// delete
-router.delete('/notes/:noteId', deleteNote);
+//! POST
+router.post('/notes', celebrate(createNoteSchema), createNote);
 
-// patch
-router.patch('/notes/:noteId', updateNote);
+//! DELETE
+router.delete('/notes/:noteId', celebrate(noteIdSchema), deleteNote);
+
+//! PATCH
+router.patch('/notes/:noteId', celebrate(updateNoteSchema), updateNote);
 
 export default router;

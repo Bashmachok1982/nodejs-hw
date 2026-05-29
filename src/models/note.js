@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { TAGS } from '../constants/tags.js';
 
 const noteSchema = new Schema(
   {
@@ -16,19 +17,13 @@ const noteSchema = new Schema(
     tag: {
       type: String,
       default: 'Todo',
-      enum: [
-        'Work',
-        'Personal',
-        'Meeting',
-        'Shopping',
-        'Ideas',
-        'Travel',
-        'Finance',
-        'Health',
-        'Important',
-        'Todo',
-      ],
+      enum: TAGS,
       required: false,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
   },
   {
@@ -36,5 +31,10 @@ const noteSchema = new Schema(
     versionKey: false,
   },
 );
+
+//! текстові індекси не обʼєднувати в один рядок (!окремо!)
+noteSchema.index({ title: 'text', content: 'text' });
+//!додаємо userId
+noteSchema.index({ userId: 1, tag: 1 });
 
 export const Note = model('Note', noteSchema);
