@@ -13,6 +13,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 // routes
 import notesRouter from './routes/notesRoutes.js';
 import authRouter from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 //! старт
 const app = express();
@@ -31,6 +32,7 @@ app.use(cookieParser());
 //! Роутc
 app.use(notesRouter);
 app.use(authRouter);
+app.use(userRoutes);
 
 //! Errors
 // middleware 404
