@@ -84,13 +84,6 @@ export const requestResetEmail = async (req, res, next) => {
     link: `${process.env.FRONTEND_DOMAIN}/reset-password?token=${resetToken}`,
   });
 
-  console.log('Trying to send email to:', email);
-  console.log('SMTP settings:', {
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    user: process.env.SMTP_USER,
-  });
-
   try {
     await sendEmail({
       from: process.env.SMTP_FROM,
